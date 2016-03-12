@@ -1,0 +1,342 @@
+#model fitting linear regression
+mod1 <- lm(y~x1+x2+x3,data=ds)
+summary(mod1)
+
+
+###################################################
+### chunk number 1: 
+###################################################
+options(digits=3)
+options(width=67) # narrow output 
+library(foreign)
+ds = read.csv("http://www.math.smith.edu/r/data/help.csv")
+head(ds)
+newds = ds[ds$female==1,]
+attach(newds)
+names(newds)
+str(newds)
+search()
+levels(substance)
+#"alcohol" "cocaine" "heroin" 
+#creating new variable
+sub = factor(substance, levels=c("heroin", "alcohol", 
+                                 "cocaine"))
+fivenum(i1)
+###################################################
+
+#misssing values
+missornot<-unlist(lapply(newds,function(x)any(is.na(x))))
+hasMissing<-names(missornot)[missornot]
+dim(newds)
+names(missornot)[!missornot]
+39+49
+byPredByClass <- apply(newds[, hasMissing], 2,
+                       function(x, y) {
+                         tab <- sum(is.na(x))
+                         tab/length(x)
+                       })
+i11
+View(byPredByClass)
+tab<-sum(is.na(newds[,c('e2b1')]))
+tab/length(e2b1)
+dim(tab)
+View(tab)
+attach(ds)
+#########################################################
+### chunk number 3: splot
+###################################################
+#scatterplot for understanding the variable ;type=n noplot ;the default size of texts
+plot(age, i1, ylim=c(0,40), type="n",cex.lab=1.4, 
+     cex.axis=1.4)
+#cex.axis
+#The magnification to be used for axis annotation relative to the current setting of cex.
+
+#cex.lab
+#The magnification to be used for x and y labels relative to the current setting of cex.
+
+points(age[substance=="alcohol"], i1[substance=="alcohol"], 
+       pch="a")
+?plot
+??cex  #graphics::par  
+?pch
+#plotting 'character', i.e., symbol to use. This can either be a single character or
+#an integer code for one of a set of graphics symbols
+#lowess
+?lowess
+#This function performs the computations for the LOWESS smoother which uses 
+#locally-weighted polynomial regression
+lines(lowess(age[substance=="alcohol"], 
+             i1[substance=="alcohol"]), lty=1, lwd=2)
+points(age[substance=="cocaine"], i1[substance=="cocaine"], 
+       pch="c")
+lines(lowess(age[substance=="cocaine"], 
+             i1[substance=="cocaine"]), lty=2, lwd=2)
+points(age[substance=="heroin"], i1[substance=="heroin"], 
+       pch="h")
+lines(lowess(age[substance=="heroin"], 
+             i1[substance=="heroin"]), lty=3, lwd=2)
+legend(44, 38, legend=c("alcohol", "cocaine", "heroin"), 
+       lty=1:3, cex=1.4, lwd=2, pch=c("a", "c", "h"))
+
+
+###################################################
+### chunk number 5: intplot
+###################################################
+age
+pcs
+ord = order(age)
+orderage = age[ord]
+orderpcs = pcs[ord]
+lm1 = lm(orderpcs ~ orderage)
+
+summary(lm1)
+pred.w.clim = predict(lm1, interval="confidence")  # average group of people
+pred.w.plim = predict(lm1, interval="prediction")   #single selection ,more uncertainty associated with compared to ci
+pred.w.plim = predict(lm1, newdata=d.f,interval="prediction")
+matplot(orderage, pred.w.plim, lty=c(1, 2, 2), type="l",
+        ylab="predicted PCS", xlab="age (in years)", lwd=2)
+matpoints(orderage, pred.w.clim, lty=c(1, 3, 3), type="l", 
+          lwd=2)
+legend(40, 56, legend=c("prediction", "confidence"), lty=2:3, 
+       lwd=2)
+
+
+###################################################
+### chunk number 6: 
+###################################################
+options(show.signif.stars=FALSE)
+lm1 = lm(i1 ~ sub * age)
+summary(lm1)
+lm2 = lm(i1 ~ sub + age)
+anova(lm2, lm1)
+############################################
+mod1<-lm(age~substance,contrasts=list(substance='contr.SAS'))
+summary(mod1)
+logLik(mod1)
+AIC(mod1)
+BIC(mod1)
+contr.SAS(2) #last level is reference
+contr.treatment(2)  #first level is reference
+vcov(mod1)
+
+#leverage
+hatvalues(mod1)
+?hatvalues
+cooks.distance(mod1)
+dffits(mod1)
+
+library(lmtest)
+bptest(mod1)
+?bptest
+
+coef(summary(mod1))[,2]
+
+str(newds)
+library(MASS)
+mod4<-lm(i1~ substance+cesd4,data=ds)
+cesd4[is.na(cesd4)]<-0
+
+lapply(cesd4,function(x)(sum(is.na(cesd4))))
+
+stepAIC(mod4)
+sum(is.na(substance))
+sum(is.na(i1))
+
+#one way anova
+mod1<-aov(age~substance)
+summary(mod1)
+
+#two way anova
+
+mod1<-aov(age~substance+racegrp)
+summary(mod1)
+
+
+
+
+###################################################
+#linear regression with no intercept
+mod1<-lm(age~0+substance,contrasts=list(substance='contr.SAS'))
+summary(mod1)
+
+
+######################################################
+### chunk number 7: 
+###################################################
+names(summary(lm1))
+summary(lm1)$sigma
+
+
+###################################################
+### chunk number 8: 
+###################################################
+names(lm1)
+
+
+###################################################
+### chunk number 9: 
+###################################################
+lm1$coefficients
+coef(lm1)
+confint(lm1)
+
+
+
+
+
+
+?vcov
+###################################################
+### chunk number 11: 
+###################################################
+pred = fitted(lm1)
+resid = residuals(lm1)
+quantile(resid)
+?fitted
+#fitted is a generic function which extracts fitted values from objects returned by modeling functions
+
+###################################################
+### chunk number 12: ****
+###################################################
+lm1 = lm(i1 ~ sub * age)
+pred = fitted(lm1)
+resid = residuals(lm1)
+tmpds = data.frame(age, i1, sub, pred, resid,rstandard(lm1))
+tmpds[resid==max(resid),]
+tmpds[resid==min(resid),]
+
+
+###################################################
+### chunk number 14: 
+###################################################
+oldpar = par(mfrow=c(2, 2), mar=c(4, 4, 2, 2)+.1)
+plot(lm1)
+par(oldpar)
+
+
+###################################################
+### chunk number 16: 
+###################################################
+library(MASS)
+?rstandard
+std.res = rstandard(lm1)
+fivenum(std.res)
+hist(std.res, main="", 
+     xlab="standardized residuals", col="gray80", freq=FALSE)
+lines(density(std.res), lwd=2)
+xvals = seq(from=min(std.res), to=max(std.res), length=100)
+lines(xvals, dnorm(xvals, mean(std.res), sd(std.res)), lty=2,
+      lwd=3)
+
+
+###################################################
+### chunk number 17: 
+###################################################
+uniquevals = unique(substance)
+numunique = length(uniquevals)
+formula = as.formula(i1 ~ age)
+p = length(coef(lm(formula)))
+res = matrix(rep(0, numunique*p), p, numunique)
+for (i in 1:length(uniquevals)) {
+  res[,i] = coef(lm(formula, subset=substance==uniquevals[i]))
+}
+class(res)
+rownames(res) = c("intercept","slope")
+colnames(res) = uniquevals
+res
+detach(newds)
+
+names(res)
+formula(res)
+###################################################
+### chunk number 19: 
+###################################################
+attach(ds)
+names(ds)
+sub = as.factor(substance)
+gender = as.factor(ifelse(female==0, "F", "M"))
+interaction.plot(sub, gender, cesd, xlab="substance", las=1, 
+                 lwd=2)
+?interaction.plot
+
+*-###################################################
+### chunk number 21: 
+###################################################
+subs = character(length(substance)) 
+#renaming the variable values
+subs[substance=="alcohol"] = "Alc"
+subs[substance=="cocaine"] = "Coc"
+subs[substance=="heroin"] = "Her"
+gen = character(length(female))
+gen[female==0] = "F"
+gen[female==1] = "M"
+
+
+
+boxout = boxplot(cesd ~ subs + gender, notch=TRUE, 
+                 varwidth=TRUE, col="gray80")
+boxmeans = tapply(cesd, list(subs, gender), mean)
+points(seq(boxout$n), boxmeans, pch=4, cex=2)
+
+
+###################################################
+### chunk number 22: 
+###################################################
+aov1 = aov(cesd ~ sub * gender, data=ds)
+aov2 = aov(cesd ~ sub + gender, data=ds)
+resid = residuals(aov2)
+anova(aov2, aov1)
+
+
+###################################################
+### chunk number 23: 
+###################################################
+options(digits=6)
+x<-logLik(aov1)
+logLik(aov2)
+lldiff = logLik(aov1)[1] - logLik(aov2)[1]
+lldiff
+1 - pchisq(2*lldiff, 2)
+options(digits=3)
+
+
+###################################################
+### chunk number 24: 
+###################################################
+aov2
+summary(aov2)
+
+
+###################################################
+### chunk number 25: 
+###################################################
+contrasts(sub) = contr.SAS(3)
+aov3 = lm(cesd ~ sub + gender, data=ds)
+summary(aov3)
+
+
+###################################################
+### chunk number 26: 
+###################################################
+AIC(aov1)
+AIC(aov2)
+
+
+###################################################
+### chunk number 27: 
+###################################################
+mult = TukeyHSD(aov(cesd ~ sub, data=ds), "sub")
+mult
+
+
+###################################################
+### chunk number 29: hsdplot
+###################################################
+plot(mult)
+
+
+###################################################
+### chunk number 30: 
+###################################################
+library(gmodels)
+fit.contrast(aov2, "sub", c(1,-2,1), conf.int=0.95 )
